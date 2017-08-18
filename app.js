@@ -5,7 +5,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-//mongo存储session，session-mongoose不支持4.x了，这里我也不知道起作用的是express-session还是session-mongoose
+//mongo存储session，最新session-mongoose不支持4.x了，使用4.10.8版本。
 var session = require('express-session');
 var connect = require('connect');
 var MongoSessionStore = require('session-mongoose')(require('connect'));
@@ -14,6 +14,7 @@ var store = new MongoSessionStore({
     interval: 120000
 });
 
+
 // 加载路由，加载不解析
 var webRouter = require('./web_router');
 
@@ -21,10 +22,11 @@ var webRouter = require('./web_router');
 // 创建项目实例
 var app = express();
 
-// 实例化express-session
+// 实例化express-session,并保存mongodb
 app.use(
     session({
         secret: 'ending man',
+        store:store,
         cookie: { maxAge: 60000 }
     })
 );
@@ -38,8 +40,9 @@ app.set('view engine', 'ejs');
 //日志
 app.use(logger('dev'));
 // 解析器
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '1mb'}));
+// extended: true才可以解析转义post的json，否则报错，要把生成器代码的false改为true
+app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

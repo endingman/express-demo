@@ -10,3 +10,7 @@ a {
 .alert{
     background:#f2dede;
 }
+
+#c_editor{
+    width: 80%;
+}
