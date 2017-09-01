@@ -16,7 +16,9 @@ gulp.task('server', function() {
         browserSync.init({
             proxy: 'http://localhost:3009',
             files: ["public/**/*.*", "views/**", "routes/**"],
-            port:8081
+            port:8081,
+            open:false,
+            notify: false
         }, function() {
             console.log("browser refreshed.");
         });
